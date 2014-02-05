@@ -1,4 +1,5 @@
 from django.db import models
+# FIXME: adapt to allow custom User model
 from django.contrib.auth.models import User
 
 
