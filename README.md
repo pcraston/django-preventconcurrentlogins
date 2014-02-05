@@ -13,11 +13,13 @@ Quick start
 
 1. Add "preventconcurrentlogins" to your INSTALLED_APPS settings like this::
 
-    INSTALLED_APPS = {
-        ...
-        'preventconcurrentlogins',
-    }
-
+    ```python
+        INSTALLED_APPS = {        
+            ...
+                'preventconcurrentlogins',
+        }
+    ```
+    
 
 2. Run `python manage.py migrate` to create the visitor model that is used to track a users currently active session
 key.
