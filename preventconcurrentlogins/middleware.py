@@ -1,8 +1,11 @@
-# FIXME: adapt to allow custom User model
-from django.contrib.auth.models import User
+try:
+    from django.contrib.auth import get_user_model
+except ImportError:  # django < 1.5
+    from django.contrib.auth.models import User
+else:
+    User = get_user_model()
 from django.contrib.sessions.models import Session
-# FIXME: deal with cache not being used
-from django.core.cache import cache
+from django.conf import settings
 
 from models import Visitor
 
@@ -22,8 +25,11 @@ class PreventConcurrentLoginsMiddleware(object):
                     Session.objects.filter(session_key=session_key_in_visitor_db).delete()
                     request.user.visitor.session_key = key_from_cookie
                     request.user.visitor.save()
-                    # FIXME: deal with cache not being used
-                    cache.clear()
+                    # if using cache or cached_db session, also clear cache
+                    if settings.SESSION_ENGINE in ('django.contrib.sessions.backends.cached_db',
+                                                   'django.contrib.sessions.backends.cache'):
+                        from django.core.cache import cache
+                        cache.clear()
             else:
                 Visitor.objects.create(
                     user=request.user,

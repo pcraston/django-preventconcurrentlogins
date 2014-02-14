@@ -1,6 +1,10 @@
 from django.db import models
-# FIXME: adapt to allow custom User model
-from django.contrib.auth.models import User
+try:
+    from django.contrib.auth import get_user_model
+except ImportError:  # django < 1.5
+    from django.contrib.auth.models import User
+else:
+    User = get_user_model()
 
 
 class Visitor(models.Model):
