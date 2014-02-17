@@ -21,5 +21,15 @@ Usage
     ```
     
 
+2. Add "preventconcurrentlogs.middleware.PreventConcurrentLoginsMiddleware" to MIDDLEWARE_CLASSES::
+
+    ```python
+        MIDDLEWARE_CLASSES = {        
+            ...
+                'preventconcurrentlogs.middleware.PreventConcurrentLoginsMiddleware',
+        }
+    ```
+    
+
 2. Run `python manage.py migrate` to create the visitor model that is used to track a users currently active session
 key.
