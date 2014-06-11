@@ -8,5 +8,5 @@ else:
 
 
 class Visitor(models.Model):
-    user = models.OneToOneField(User, null=False)
+    user = models.OneToOneField(User, null=False, related_name='visitor')
     session_key = models.CharField(null=False, max_length=40)
