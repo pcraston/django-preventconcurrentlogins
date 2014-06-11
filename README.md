@@ -31,5 +31,5 @@ Usage
     ```
     
 
-2. Run `python manage.py migrate` to create the visitor model that is used to track a users currently active session
+3. Run `python manage.py migrate` to create the visitor model that is used to track a users currently active session
 key.
