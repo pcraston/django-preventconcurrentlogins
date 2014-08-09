@@ -21,12 +21,12 @@ Usage
     ```
     
 
-2. Add "preventconcurrentlogs.middleware.PreventConcurrentLoginsMiddleware" to MIDDLEWARE_CLASSES::
+2. Add "preventconcurrentlogins.middleware.PreventConcurrentLoginsMiddleware" to MIDDLEWARE_CLASSES::
 
     ```python
         MIDDLEWARE_CLASSES = {        
             ...
-                'preventconcurrentlogs.middleware.PreventConcurrentLoginsMiddleware',
+                'preventconcurrentlogins.middleware.PreventConcurrentLoginsMiddleware',
         }
     ```
     
