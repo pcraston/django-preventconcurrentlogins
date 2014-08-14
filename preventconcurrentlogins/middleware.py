@@ -6,9 +6,11 @@ else:
     User = get_user_model()
 from django.contrib.sessions.models import Session
 from django.conf import settings
+from django.utils.importlib import import_module
 
 from models import Visitor
 
+engine = import_module(settings.SESSION_ENGINE)
 
 class PreventConcurrentLoginsMiddleware(object):
     """
@@ -22,14 +24,10 @@ class PreventConcurrentLoginsMiddleware(object):
             if hasattr(request.user, 'visitor'):
                 session_key_in_visitor_db = request.user.visitor.session_key
                 if session_key_in_visitor_db != key_from_cookie:
-                    Session.objects.filter(session_key=session_key_in_visitor_db).delete()
+                    # Delete the Session object from database and cache
+                    engine.SessionStore(session_key_in_visitor_db).delete()
                     request.user.visitor.session_key = key_from_cookie
                     request.user.visitor.save()
-                    # if using cache or cached_db session, also clear cache
-                    if settings.SESSION_ENGINE in ('django.contrib.sessions.backends.cached_db',
-                                                   'django.contrib.sessions.backends.cache'):
-                        from django.core.cache import cache
-                        cache.clear()
             else:
                 Visitor.objects.create(
                     user=request.user,
