@@ -1,12 +1,9 @@
+from django.conf import settings
+from django.contrib.auth.models import User
 from django.db import models
-try:
-    from django.contrib.auth import get_user_model
-except ImportError:  # django < 1.5
-    from django.contrib.auth.models import User
-else:
-    User = get_user_model()
 
+AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', User)
 
 class Visitor(models.Model):
-    user = models.OneToOneField(User, null=False, related_name='visitor')
+    user = models.OneToOneField(AUTH_USER_MODEL, null=False, related_name='visitor')
     session_key = models.CharField(null=False, max_length=40)
