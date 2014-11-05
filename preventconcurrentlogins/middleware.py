@@ -1,9 +1,3 @@
-try:
-    from django.contrib.auth import get_user_model
-except ImportError:  # django < 1.5
-    from django.contrib.auth.models import User
-else:
-    User = get_user_model()
 from django.contrib.sessions.models import Session
 from django.conf import settings
 from django.utils.importlib import import_module
@@ -19,7 +13,7 @@ class PreventConcurrentLoginsMiddleware(object):
     """
 
     def process_request(self, request):
-        if isinstance(request.user, User):
+        if request.user.is_authenticated():
             key_from_cookie = request.session.session_key
             if hasattr(request.user, 'visitor'):
                 session_key_in_visitor_db = request.user.visitor.session_key
