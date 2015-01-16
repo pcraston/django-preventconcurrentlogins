@@ -2,7 +2,7 @@ from django.contrib.sessions.models import Session
 from django.conf import settings
 from django.utils.importlib import import_module
 
-from models import Visitor
+from preventconcurrentlogins.models import Visitor
 
 engine = import_module(settings.SESSION_ENGINE)
 
