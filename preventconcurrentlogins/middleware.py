@@ -1,6 +1,6 @@
 from django.contrib.sessions.models import Session
 from django.conf import settings
-from django.utils.importlib import import_module
+from importlib import import_module
 
 from preventconcurrentlogins.models import Visitor
 
