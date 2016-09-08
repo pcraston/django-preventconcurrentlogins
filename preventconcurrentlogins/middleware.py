@@ -1,6 +1,7 @@
 from django.contrib.sessions.models import Session
 from django.conf import settings
 from django import VERSION as DJANGO_VERSION
+from django.utils import deprecation
 from importlib import import_module
 
 from preventconcurrentlogins.models import Visitor
