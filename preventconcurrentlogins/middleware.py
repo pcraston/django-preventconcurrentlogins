@@ -1,12 +1,13 @@
 from django.contrib.sessions.models import Session
 from django.conf import settings
+from django import VERSION as DJANGO_VERSION
 from importlib import import_module
 
 from preventconcurrentlogins.models import Visitor
 
 engine = import_module(settings.SESSION_ENGINE)
 
-class PreventConcurrentLoginsMiddleware(object):
+class PreventConcurrentLoginsMiddleware(deprecation.MiddlewareMixin if DJANGO_VERSION >= (1, 10, 0) else object):
     """
     Django middleware that prevents multiple concurrent logins..
     Adapted from http://stackoverflow.com/a/1814797 and https://gist.github.com/peterdemin/5829440
