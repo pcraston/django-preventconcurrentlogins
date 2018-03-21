@@ -8,6 +8,17 @@ from preventconcurrentlogins.models import Visitor
 
 engine = import_module(settings.SESSION_ENGINE)
 
+
+def is_authenticated(user):
+    """
+    Check if user is authenticated, consider backwards compatibility
+    """
+    if DJANGO_VERSION >= (1, 10, 0):
+        return user.is_authenticated
+    else:
+        return user.is_authenticated()
+
+
 class PreventConcurrentLoginsMiddleware(deprecation.MiddlewareMixin if DJANGO_VERSION >= (1, 10, 0) else object):
     """
     Django middleware that prevents multiple concurrent logins..
@@ -15,7 +26,7 @@ class PreventConcurrentLoginsMiddleware(deprecation.MiddlewareMixin if DJANGO_VE
     """
 
     def process_request(self, request):
-        if request.user.is_authenticated():
+        if is_authenticated(request.user):
             key_from_cookie = request.session.session_key
             if hasattr(request.user, 'visitor'):
                 session_key_in_visitor_db = request.user.visitor.session_key
