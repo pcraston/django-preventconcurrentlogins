@@ -17,7 +17,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('session_key', models.CharField(max_length=40)),
-                ('user', models.OneToOneField(related_name='visitor', to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(related_name='visitor', to=settings.AUTH_USER_MODEL,
+                                              on_delete=models.deletion.CASCADE)),
             ],
             options={
             },
