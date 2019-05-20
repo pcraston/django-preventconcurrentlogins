@@ -1,4 +1,3 @@
-from django.contrib.sessions.models import Session
 from django.conf import settings
 from django import VERSION as DJANGO_VERSION
 from django.utils import deprecation
@@ -26,6 +25,10 @@ class PreventConcurrentLoginsMiddleware(deprecation.MiddlewareMixin if DJANGO_VE
     """
 
     def process_request(self, request):
+        # allow a preceding middleware to opt out of the prevent concurrent logins check
+        if getattr(request, '_allow_concurrent_logins', False):
+            return
+
         if is_authenticated(request.user):
             key_from_cookie = request.session.session_key
             if hasattr(request.user, 'visitor'):
