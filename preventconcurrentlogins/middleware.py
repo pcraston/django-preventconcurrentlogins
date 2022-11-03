@@ -1,6 +1,7 @@
 from django.contrib.sessions.models import Session
 from django.conf import settings
 from django import VERSION as DJANGO_VERSION
+from django.db.utils import IntegrityError
 from django.utils import deprecation
 from importlib import import_module
 
@@ -26,17 +27,24 @@ class PreventConcurrentLoginsMiddleware(deprecation.MiddlewareMixin if DJANGO_VE
     """
 
     def process_request(self, request):
-        if is_authenticated(request.user):
-            key_from_cookie = request.session.session_key
-            if hasattr(request.user, 'visitor'):
-                session_key_in_visitor_db = request.user.visitor.session_key
-                if session_key_in_visitor_db != key_from_cookie:
-                    # Delete the Session object from database and cache
-                    engine.SessionStore(session_key_in_visitor_db).delete()
-                    request.user.visitor.session_key = key_from_cookie
-                    request.user.visitor.save()
-            else:
-                Visitor.objects.create(
-                    user=request.user,
-                    session_key=key_from_cookie
-                )
+        for _ in range(3):
+            race_condition = False  # assume there is no race condition
+            if is_authenticated(request.user):
+                key_from_cookie = request.session.session_key
+                if hasattr(request.user, 'visitor'):
+                    session_key_in_visitor_db = request.user.visitor.session_key
+                    if session_key_in_visitor_db != key_from_cookie:
+                        # Delete the Session object from database and cache
+                        engine.SessionStore(session_key_in_visitor_db).delete()
+                        request.user.visitor.session_key = key_from_cookie
+                        request.user.visitor.save()
+                else:
+                    try:
+                        Visitor.objects.create(
+                            user=request.user,
+                            session_key=key_from_cookie
+                        )
+                    except IntegrityError:
+                        race_condition = True  # oops, race condition
+            if not race_condition:
+                break  # all fine, we can leave the 'for' loop
